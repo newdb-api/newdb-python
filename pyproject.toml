@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "newdb"
+version = "1.0.0"
+description = "Official Python SDK for NewDB REST API (Verification of Individuals, Legal Entities, Passports, FNS, FSSP, Bankruptcy, Pledge, Courts in Russia/CIS)"
+readme = "README.md"
+authors = [
+    { name = "NewDB Team", email = "access@newdb.net" }
+]
+license = { text = "MIT" }
+keywords = [
+    "newdb", "kyc", "compliance", "fns", "fssp", "egrul", "egrip", 
+    "counterparty-verification", "passport-check", "bankruptcy", "scoring", "api"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "httpx>=0.24.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.20.0",
+]
+
+[project.urls]
+Homepage = "https://newdb.net"
+Documentation = "https://newdb.net/docs"
+Repository = "https://github.com/newdb-api/newdb-python"

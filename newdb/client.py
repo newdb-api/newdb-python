@@ -118,6 +118,9 @@ class LegalNamespace(BaseDomainNamespace):
     def check_arbitr(self, inn: str, country: str = "ru", **kwargs) -> Any:
         return self._client.execute({"method": "arbitr_legal", "inn": inn, "country": country, **kwargs})
 
+    def monitor_kad_case(self, case_number: str, country: str = "ru", **kwargs) -> Any:
+        return self._client.execute({"method": "kad_event_monitor", "case_number": case_number, "country": country, **kwargs})
+
     def check_fssp(self, inn: str, country: str = "ru", **kwargs) -> Any:
         return self._client.execute({"method": "fssp_legal", "inn": inn, "country": country, **kwargs})
 

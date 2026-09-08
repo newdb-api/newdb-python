@@ -1,5 +1,6 @@
 """NewDB API Client implementation (Sync & Async)."""
 
+import os
 import time
 import asyncio
 from uuid import uuid4
@@ -15,6 +16,8 @@ from .exceptions import (
 from .models import BalanceResponse, MethodResult, TaskResponse
 
 DEFAULT_BASE_URL = "https://api.newdb.net/v2"
+TEST_BASE_URL = "https://api.newdb.net/test/v2"
+DEFAULT_TEST_TOKEN = "test_token_newdb_sandbox"
 
 
 class BaseDomainNamespace:
@@ -199,14 +202,29 @@ class NewDBClient:
 
     def __init__(
         self,
-        api_key: str,
-        base_url: str = DEFAULT_BASE_URL,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
         timeout: float = 60.0,
+        test_mode: bool = False,
     ):
-        if not api_key:
+        env_test = os.getenv("NEWDB_TEST_MODE", "").lower() in ("1", "true", "yes")
+        self.test_mode = bool(test_mode or env_test)
+
+        resolved_key = (api_key or os.getenv("NEWDB_API_KEY", "")).strip()
+        if not resolved_key and self.test_mode:
+            resolved_key = DEFAULT_TEST_TOKEN
+
+        if not resolved_key:
             raise AuthenticationError("API key (token) must be provided.")
-        self.api_key = api_key.strip()
-        self.base_url = base_url.rstrip("/")
+
+        self.api_key = resolved_key
+        if base_url:
+            self.base_url = base_url.rstrip("/")
+        elif self.test_mode:
+            self.base_url = TEST_BASE_URL
+        else:
+            self.base_url = os.getenv("NEWDB_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
+
         self.timeout = timeout
         self._http = httpx.Client(
             base_url=self.base_url,
@@ -282,14 +300,29 @@ class AsyncNewDBClient:
 
     def __init__(
         self,
-        api_key: str,
-        base_url: str = DEFAULT_BASE_URL,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
         timeout: float = 60.0,
+        test_mode: bool = False,
     ):
-        if not api_key:
+        env_test = os.getenv("NEWDB_TEST_MODE", "").lower() in ("1", "true", "yes")
+        self.test_mode = bool(test_mode or env_test)
+
+        resolved_key = (api_key or os.getenv("NEWDB_API_KEY", "")).strip()
+        if not resolved_key and self.test_mode:
+            resolved_key = DEFAULT_TEST_TOKEN
+
+        if not resolved_key:
             raise AuthenticationError("API key (token) must be provided.")
-        self.api_key = api_key.strip()
-        self.base_url = base_url.rstrip("/")
+
+        self.api_key = resolved_key
+        if base_url:
+            self.base_url = base_url.rstrip("/")
+        elif self.test_mode:
+            self.base_url = TEST_BASE_URL
+        else:
+            self.base_url = os.getenv("NEWDB_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
+
         self.timeout = timeout
         self._http = httpx.AsyncClient(
             base_url=self.base_url,

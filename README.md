@@ -46,6 +46,27 @@ print(completed_task.results)
 
 ---
 
+### Тестовый режим (Sandbox / Test Mode)
+
+Для тестирования и отладки интеграции без списания баланса и ожидания внешних сервисов используйте встроенный режим `test_mode`:
+
+```python
+from newdb import NewDBClient
+
+# Активация тестового контура https://api.newdb.net/test/v2
+client = NewDBClient(test_mode=True)
+
+# Либо через переменную окружения:
+# export NEWDB_TEST_MODE=1
+# client = NewDBClient()
+
+# Мгновенный синтетический ответ с полными полями
+res = client.person.check_passport_mvd(seria="4510", number="123456", firstname="Иван", lastname="Иванов")
+print(res.state, res.results)
+```
+
+---
+
 ### Асинхронный клиент (asyncio / FastAPI / aiohttp)
 
 ```python

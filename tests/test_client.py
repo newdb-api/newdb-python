@@ -1,23 +1,37 @@
 """Tests for NewDB Python SDK."""
 
-import pytest
+import unittest
 from newdb import NewDBClient, AsyncNewDBClient
 from newdb.exceptions import AuthenticationError
 
 
-def test_client_init_requires_api_key():
-    with pytest.raises(AuthenticationError):
-        NewDBClient(api_key="")
+class TestNewDBClient(unittest.TestCase):
+    def test_client_init_requires_api_key(self):
+        with self.assertRaises(AuthenticationError):
+            NewDBClient(api_key="")
+
+    def test_async_client_init_requires_api_key(self):
+        with self.assertRaises(AuthenticationError):
+            AsyncNewDBClient(api_key="")
+
+    def test_client_namespaces_exist(self):
+        client = NewDBClient(api_key="test_token")
+        self.assertTrue(hasattr(client, "person"))
+        self.assertTrue(hasattr(client, "legal"))
+        self.assertTrue(hasattr(client, "foreign"))
+        self.assertTrue(hasattr(client, "property"))
+
+    def test_client_test_mode(self):
+        client = NewDBClient(test_mode=True)
+        self.assertTrue(client.test_mode)
+        self.assertEqual(client.base_url, "https://api.newdb.net/test/v2")
+        self.assertEqual(client.api_key, "test_token_newdb_sandbox")
+
+    def test_async_client_test_mode(self):
+        client = AsyncNewDBClient(test_mode=True)
+        self.assertTrue(client.test_mode)
+        self.assertEqual(client.base_url, "https://api.newdb.net/test/v2")
 
 
-def test_async_client_init_requires_api_key():
-    with pytest.raises(AuthenticationError):
-        AsyncNewDBClient(api_key="")
-
-
-def test_client_namespaces_exist():
-    client = NewDBClient(api_key="test_token")
-    assert hasattr(client, "person")
-    assert hasattr(client, "legal")
-    assert hasattr(client, "foreign")
-    assert hasattr(client, "property")
+if __name__ == "__main__":
+    unittest.main()

@@ -127,6 +127,12 @@ class LegalNamespace(BaseDomainNamespace):
     def check_fssp(self, inn: str, country: str = "ru", **kwargs) -> Any:
         return self._client.execute({"method": "fssp_legal", "inn": inn, "country": country, **kwargs})
 
+    def check_bo(self, inn: str, country: str = "ru", get_screen: Optional[bool] = None, **kwargs) -> Any:
+        params = {"method": "fns_bo", "inn": inn, "country": country, **kwargs}
+        if get_screen is not None:
+            params["get_screen"] = get_screen
+        return self._client.execute(params)
+
     def complex_check(self, inn: str, country: str = "ru", **kwargs) -> Any:
         return self._client.execute({"method": "complex_by_inn", "inn": inn, "country": country, **kwargs})
 
@@ -255,6 +261,28 @@ class NewDBClient:
         data = resp.json()
         return BalanceResponse(token=data.get("token", ""), balance=int(data.get("balance", 0)), raw=data)
 
+    def generate_report(self, request_id: str, format: str = "html", report_type: Optional[str] = None) -> bytes:
+        params = {"requestId": request_id, "format": format}
+        if report_type:
+            params["report_type"] = report_type
+        resp = self._http.get("/report", params=params)
+        if resp.status_code in {401, 403}:
+            raise AuthenticationError("Invalid X-API-KEY token.")
+        if resp.status_code != 200:
+            raise APIResponseError(resp.text, resp.status_code)
+        return resp.content
+
+    def generate_aggregated_report(self, request_ids: list[str], report_type: str, format: str = "html") -> bytes:
+        resp = self._http.post(
+            "/report",
+            json={"requestIds": request_ids, "report_type": report_type, "format": format},
+        )
+        if resp.status_code in {401, 403}:
+            raise AuthenticationError("Invalid X-API-KEY token.")
+        if resp.status_code != 200:
+            raise APIResponseError(resp.text, resp.status_code)
+        return resp.content
+
     def execute(self, params: Dict[str, Any], request_id: Optional[str] = None, webhook: Optional[str] = None) -> TaskResponse:
         req_id = request_id or str(uuid4())
         payload = {"requestId": req_id, "params": params}
@@ -352,6 +380,28 @@ class AsyncNewDBClient:
             raise APIResponseError(resp.text, resp.status_code)
         data = resp.json()
         return BalanceResponse(token=data.get("token", ""), balance=int(data.get("balance", 0)), raw=data)
+
+    async def generate_report(self, request_id: str, format: str = "html", report_type: Optional[str] = None) -> bytes:
+        params = {"requestId": request_id, "format": format}
+        if report_type:
+            params["report_type"] = report_type
+        resp = await self._http.get("/report", params=params)
+        if resp.status_code in {401, 403}:
+            raise AuthenticationError("Invalid X-API-KEY token.")
+        if resp.status_code != 200:
+            raise APIResponseError(resp.text, resp.status_code)
+        return resp.content
+
+    async def generate_aggregated_report(self, request_ids: list[str], report_type: str, format: str = "html") -> bytes:
+        resp = await self._http.post(
+            "/report",
+            json={"requestIds": request_ids, "report_type": report_type, "format": format},
+        )
+        if resp.status_code in {401, 403}:
+            raise AuthenticationError("Invalid X-API-KEY token.")
+        if resp.status_code != 200:
+            raise APIResponseError(resp.text, resp.status_code)
+        return resp.content
 
     async def execute(self, params: Dict[str, Any], request_id: Optional[str] = None, webhook: Optional[str] = None) -> TaskResponse:
         req_id = request_id or str(uuid4())

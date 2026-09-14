@@ -116,6 +116,15 @@ asyncio.run(main())
 * `check_bo(inn)` — бухгалтерская (финансовая) отчетность (ГИР БО / ФНС)
 * `complex_check(inn)` — комплексная проверка организации + проверка руководства и учредителей
 
+### HTML/PDF-отчеты
+
+```python
+pdf = client.generate_report(task.request_id, format="pdf")
+foreign_html = client.generate_aggregated_report(request_ids, "complex_foreign", format="html")
+```
+
+`generate_report` поддерживает `complex_by_passport`, `complex_by_inn` и `realty_price`. Для объединения отдельных миграционных проверок используйте `generate_aggregated_report`.
+
 ### Иностранные граждане (`client.foreign.*`)
 * `check_rkl(firstname, lastname, dob, id_doc_number, ...)` — реестр контролируемых лиц (РКЛ МВД)
 * `check_patent(number, seria=None, region="msk")` — трудовой патент (Москва, МО, регионы)
@@ -123,8 +132,9 @@ asyncio.run(main())
 * `check_rnr(number)` — разрешение на работу
 
 ### Имущество (`client.property.*`)
-* `check_rosreestr(cadastr_number=None, address=None)` — проверка недвижимости
+* `check_rosreestr(cadastr_number=None, address=None)` — проверка недвижимости по Росреестру
 * `check_pledge_vin(vin)` — проверка автомобиля на залоги по VIN
+* `check_vin(vin, get_screen=0)` — комплексная проверка авто по VIN (Госуслуги: розыск, ограничения, залоги ФНП)
 
 ---
 

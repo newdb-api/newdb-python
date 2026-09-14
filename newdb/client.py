@@ -176,6 +176,9 @@ class PropertyNamespace(BaseDomainNamespace):
     def check_pledge_vin(self, vin: str, country: str = "ru", **kwargs) -> Any:
         return self._client.execute({"method": "pledge_vin", "vin": vin, "country": country, **kwargs})
 
+    def check_vin(self, vin: str, get_screen: int = 0, **kwargs) -> Any:
+        return self._client.execute({"method": "vin_check", "vin": vin, "get_screen": get_screen, **kwargs})
+
 
 def _parse_task_response(data: Dict[str, Any]) -> TaskResponse:
     request_id = str(data.get("requestId") or data.get("reqid") or "")

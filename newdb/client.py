@@ -179,6 +179,39 @@ class PropertyNamespace(BaseDomainNamespace):
     def check_vin(self, vin: str, get_screen: int = 0, **kwargs) -> Any:
         return self._client.execute({"method": "vin_check", "vin": vin, "get_screen": get_screen, **kwargs})
 
+    def check_intellectual_property(
+        self,
+        query: Optional[str] = None,
+        search_type: str = "all",
+        trademark_name: Optional[str] = None,
+        applicant: Optional[str] = None,
+        reg_num: Optional[str] = None,
+        appl_num: Optional[str] = None,
+        limit: int = 10,
+        offset: int = 0,
+        country: str = "ru",
+        **kwargs,
+    ) -> Any:
+        params: Dict[str, Any] = {
+            "method": "intellectual_property",
+            "search_type": search_type,
+            "limit": limit,
+            "offset": offset,
+            "country": country,
+            **kwargs,
+        }
+        if query:
+            params["query"] = query
+        if trademark_name:
+            params["trademark_name"] = trademark_name
+        if applicant:
+            params["applicant"] = applicant
+        if reg_num:
+            params["reg_num"] = reg_num
+        if appl_num:
+            params["appl_num"] = appl_num
+        return self._client.execute(params)
+
 
 def _parse_task_response(data: Dict[str, Any]) -> TaskResponse:
     request_id = str(data.get("requestId") or data.get("reqid") or "")

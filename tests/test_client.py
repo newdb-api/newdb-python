@@ -33,6 +33,13 @@ class TestNewDBClient(unittest.TestCase):
         self.assertTrue(hasattr(client.property, "check_vin"))
         self.assertTrue(hasattr(client.property, "check_rosreestr"))
 
+    def test_client_person_methods(self):
+        client = NewDBClient(api_key="test_token")
+        self.assertTrue(hasattr(client.person, "check_fssp"))
+        self.assertTrue(hasattr(client.person, "check_court_arbitration"))
+        self.assertTrue(hasattr(client.person, "check_arbitr_debt_sum"))
+        self.assertTrue(hasattr(client.person, "check_fssp_company"))
+
 
 if __name__ == "__main__":
     unittest.main()

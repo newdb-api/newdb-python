@@ -92,6 +92,29 @@ class PersonNamespace(BaseDomainNamespace):
             params["dob"] = dob
         return self._client.execute(params)
 
+    def check_court_arbitration(self, innfiz: str, company_limit: Optional[int] = None, country: str = "ru", **kwargs) -> Any:
+        """Арбитраж по компаниям физлица: ЕГРЮЛ-связи + агрегация дел КАД со скорингом субсидиарного риска."""
+        params = {"method": "court_arbitration", "innfiz": innfiz, "country": country, **kwargs}
+        if company_limit is not None:
+            params["company_limit"] = company_limit
+        return self._client.execute(params)
+
+    def check_arbitr_debt_sum(self, innfiz: str, max_cases: Optional[int] = None, country: str = "ru", **kwargs) -> Any:
+        """Сумма задолженностей физлица по арбитражным делам КАД (агрегат debt_summary)."""
+        params = {"method": "arbitr_debt_sum", "innfiz": innfiz, "country": country, **kwargs}
+        if max_cases is not None:
+            params["max_cases"] = max_cases
+        return self._client.execute(params)
+
+    def check_fssp_company(self, inn: str, max_companies: Optional[int] = None, only_active: Optional[bool] = None, country: str = "ru", **kwargs) -> Any:
+        """Долги ФССП по связанным компаниям физлица (ЕГРЮЛ-связи + ФССП по компаниям)."""
+        params = {"method": "fssp_company", "inn": inn, "country": country, **kwargs}
+        if max_companies is not None:
+            params["max_companies"] = max_companies
+        if only_active is not None:
+            params["only_active"] = only_active
+        return self._client.execute(params)
+
 
 class LegalNamespace(BaseDomainNamespace):
     """Methods for legal entities checks."""

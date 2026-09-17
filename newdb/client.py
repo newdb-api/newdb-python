@@ -31,6 +31,22 @@ class PersonNamespace(BaseDomainNamespace):
     def check_passport_mvd(self, seria: str, number: str, firstname: str, lastname: str, country: str = "ru", **kwargs) -> Any:
         return self._client.execute({"method": "passport_mvd", "seria": seria, "number": number, "firstname": firstname, "lastname": lastname, "country": country, **kwargs})
 
+    def check_driver_license(self, num: str, lastname: str, firstname: str, birthdate: str, secondname: Optional[str] = None, get_screen: int = 0, country: str = "ru", **kwargs) -> Any:
+        """Проверка водительского удостоверения через Госуслуги / ГИБДД."""
+        params = {
+            "method": "driver_license",
+            "num": num,
+            "lastname": lastname,
+            "firstname": firstname,
+            "birthdate": birthdate,
+            "get_screen": get_screen,
+            "country": country,
+            **kwargs,
+        }
+        if secondname:
+            params["secondname"] = secondname
+        return self._client.execute(params)
+
     def check_passport_fns(self, seria: str, number: str, firstname: str, lastname: str, dob: str, secondname: Optional[str] = None, country: str = "ru", **kwargs) -> Any:
         params = {"method": "passport_fns", "seria": seria, "number": number, "firstname": firstname, "lastname": lastname, "dob": dob, "country": country, **kwargs}
         if secondname:

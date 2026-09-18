@@ -1,6 +1,7 @@
 """Tests for NewDB Python SDK."""
 
 import unittest
+from unittest.mock import Mock
 from newdb import NewDBClient, AsyncNewDBClient
 from newdb.exceptions import AuthenticationError
 
@@ -39,6 +40,27 @@ class TestNewDBClient(unittest.TestCase):
         self.assertTrue(hasattr(client.person, "check_court_arbitration"))
         self.assertTrue(hasattr(client.person, "check_arbitr_debt_sum"))
         self.assertTrue(hasattr(client.person, "check_fssp_company"))
+        self.assertTrue(hasattr(client.person, "check_opensanctions"))
+
+    def test_opensanctions_helper_builds_exact_filter_request(self):
+        client = NewDBClient(api_key="test_token")
+        client.execute = Mock(return_value={"state": "queued"})
+
+        client.person.check_opensanctions(
+            query="ИВАНОВ ИВАН ИВАНОВИЧ",
+            inn="500100732259",
+            birth_date="1980-01-01",
+            max_results=10,
+        )
+
+        client.execute.assert_called_once_with({
+            "method": "opensanctions",
+            "query": "ИВАНОВ ИВАН ИВАНОВИЧ",
+            "inn": "500100732259",
+            "birth_date": "1980-01-01",
+            "max_results": 10,
+            "country": "ru",
+        })
 
 
 if __name__ == "__main__":

@@ -84,6 +84,21 @@ class PersonNamespace(BaseDomainNamespace):
                 params[key] = value
         return self._client.execute(params)
 
+    def check_opensanctions(self, query: str, inn: Optional[str] = None, birth_date: Optional[str] = None, max_results: int = 25, country: str = "ru", **kwargs) -> Any:
+        """Search OpenSanctions and return only cards matching the supplied exact filters."""
+        params = {
+            "method": "opensanctions",
+            "query": query,
+            "max_results": max_results,
+            "country": country,
+            **kwargs,
+        }
+        if inn:
+            params["inn"] = inn
+        if birth_date:
+            params["birth_date"] = birth_date
+        return self._client.execute(params)
+
     def check_bankrot(self, innfiz: Optional[str] = None, fio: Optional[str] = None, country: str = "ru", **kwargs) -> Any:
         params = {"method": "bankrot_person", "country": country, **kwargs}
         if innfiz:

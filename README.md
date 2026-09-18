@@ -105,6 +105,7 @@ asyncio.run(main())
 * `check_fns_block(innfiz)` — блокировки банковских счетов (ФНС)
 * `check_egrul_ip(innfiz)` — выписка ЕГРИП и статус индивидуального предпринимателя
 * `check_terrorist(firstname, lastname, ...)` — перечень Росфинмониторинга (экстремизм/терроризм)
+* `check_opensanctions(query, inn=None, birth_date=None, max_results=25)` — санкционный и PEP-скрининг с точным уточнением карточек
 
 ### Юридические лица (`client.legal.*`)
 * `check_egrul(inn=None, ogrn=None)` — полные сведения ЕГРЮЛ и «Прозрачный бизнес»

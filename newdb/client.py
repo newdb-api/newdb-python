@@ -59,6 +59,31 @@ class PersonNamespace(BaseDomainNamespace):
             params["secondname"] = secondname
         return self._client.execute(params)
 
+    def check_disqualified(self, query: str, dob: Optional[str] = None, max_pages: Optional[int] = None, country: str = "ru", **kwargs) -> Any:
+        params = {"method": "disqualified_person", "query": query, "country": country, **kwargs}
+        if dob:
+            params["dob"] = dob
+        if max_pages is not None:
+            params["max_pages"] = max_pages
+        return self._client.execute(params)
+
+    def check_fsin_wanted(self, fio: str, dob: Optional[str] = None, territory: Optional[str] = None, get_details: bool = True, max_pages: Optional[int] = None, country: str = "ru", **kwargs) -> Any:
+        params = {"method": "fsin_wanted", "fio": fio, "get_details": get_details, "country": country, **kwargs}
+        if dob:
+            params["dob"] = dob
+        if territory:
+            params["territory"] = territory
+        if max_pages is not None:
+            params["max_pages"] = max_pages
+        return self._client.execute(params)
+
+    def check_corporate_restrictions(self, innfiz: Optional[str] = None, fio: Optional[str] = None, inn: Optional[str] = None, ogrn: Optional[str] = None, country: str = "ru", **kwargs) -> Any:
+        params = {"method": "corporate_restrictions_person", "country": country, **kwargs}
+        for key, value in (("innfiz", innfiz), ("fio", fio), ("inn", inn), ("ogrn", ogrn)):
+            if value:
+                params[key] = value
+        return self._client.execute(params)
+
     def check_bankrot(self, innfiz: Optional[str] = None, fio: Optional[str] = None, country: str = "ru", **kwargs) -> Any:
         params = {"method": "bankrot_person", "country": country, **kwargs}
         if innfiz:

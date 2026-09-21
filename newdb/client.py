@@ -215,6 +215,15 @@ class LegalNamespace(BaseDomainNamespace):
     def complex_check(self, inn: str, country: str = "ru", **kwargs) -> Any:
         return self._client.execute({"method": "complex_by_inn", "inn": inn, "country": country, **kwargs})
 
+    def check_proverki_knm(self, inn: Optional[str] = None, query: Optional[str] = None, max_pages: int = 5, country: str = "ru", **kwargs) -> Any:
+        """Search planned and unplanned inspections (КНМ) in proverki.gov.ru (ФГИС ЕРКНМ)."""
+        params = {"method": "proverki_knm", "country": country, "max_pages": max_pages, **kwargs}
+        if inn:
+            params["inn"] = inn
+        if query:
+            params["query"] = query
+        return self._client.execute(params)
+
 
 class ForeignNamespace(BaseDomainNamespace):
     """Methods for foreign citizens checks."""

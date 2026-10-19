@@ -68,9 +68,11 @@ class PersonNamespace(BaseDomainNamespace):
         return self._client.execute(params)
 
     def check_fsin_wanted(self, fio: str, dob: Optional[str] = None, territory: Optional[str] = None, get_details: bool = True, max_pages: Optional[int] = None, country: str = "ru", **kwargs) -> Any:
-        params = {"method": "fsin_wanted", "fio": fio, "get_details": get_details, "country": country, **kwargs}
-        if dob:
-            params["dob"] = dob
+        """Розыск ФСИН. ``dob`` обязателен (DD.MM.YYYY или YYYY-MM-DD); сигнатура оставлена совместимой."""
+        dob = dob or kwargs.pop("birth_date", None) or kwargs.pop("birthdate", None)
+        if not dob or not str(dob).strip():
+            raise ValueError("fsin_wanted: dob (дата рождения) обязателен, формат DD.MM.YYYY или YYYY-MM-DD")
+        params = {"method": "fsin_wanted", "fio": fio, "dob": dob, "get_details": get_details, "country": country, **kwargs}
         if territory:
             params["territory"] = territory
         if max_pages is not None:

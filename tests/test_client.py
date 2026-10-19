@@ -42,6 +42,19 @@ class TestNewDBClient(unittest.TestCase):
         self.assertTrue(hasattr(client.person, "check_fssp_company"))
         self.assertTrue(hasattr(client.person, "check_opensanctions"))
 
+    def test_fsin_wanted_requires_dob_before_calling_api(self):
+        client = NewDBClient(api_key="test_token")
+        client.execute = Mock(return_value={"state": "queued"})
+        with self.assertRaises(ValueError):
+            client.person.check_fsin_wanted("ИВАНОВ ИВАН ИВАНОВИЧ")
+        client.execute.assert_not_called()
+
+        client.person.check_fsin_wanted("ИВАНОВ ИВАН ИВАНОВИЧ", "01.01.1980")
+        client.person.check_fsin_wanted("ИВАНОВ ИВАН ИВАНОВИЧ", birth_date="1980-01-01")
+        self.assertEqual(client.execute.call_args_list[0].args[0]["dob"], "01.01.1980")
+        self.assertEqual(client.execute.call_args_list[1].args[0]["dob"], "1980-01-01")
+        self.assertNotIn("birth_date", client.execute.call_args_list[1].args[0])
+
     def test_opensanctions_helper_builds_exact_filter_request(self):
         client = NewDBClient(api_key="test_token")
         client.execute = Mock(return_value={"state": "queued"})
